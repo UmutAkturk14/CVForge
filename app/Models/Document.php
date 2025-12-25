@@ -11,6 +11,13 @@ class Document extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public const TYPE_RESUME = 'resume';
+    public const TYPE_COVER_LETTER = 'cover_letter';
+
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_FINAL = 'final';
+    public const STATUS_ARCHIVED = 'archived';
+
     protected $fillable = [
         'user_id',
         'type',
@@ -23,6 +30,16 @@ class Document extends Model
     protected $casts = [
         'content' => 'array',
     ];
+
+    public static function types(): array
+    {
+        return [self::TYPE_RESUME, self::TYPE_COVER_LETTER];
+    }
+
+    public static function statuses(): array
+    {
+        return [self::STATUS_DRAFT, self::STATUS_FINAL, self::STATUS_ARCHIVED];
+    }
 
     public function user(): BelongsTo
     {
