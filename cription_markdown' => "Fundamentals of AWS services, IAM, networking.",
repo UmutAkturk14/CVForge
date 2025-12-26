@@ -1,0 +1,39 @@
+[90m= [39m[34;4mApp\Models\Document[39;24m {#6641
+    [34mid[39m: [35m5[39m,
+    [34muser_id[39m: [35m3[39m,
+    [34mtype[39m: "[32mresume[39m",
+    [34mtitle[39m: "[32mFull Stack Developer resume[39m",
+    [34mstatus[39m: "[32mdraft[39m",
+    [34mtemplate_key[39m: "[32mclassic[39m",
+    [34mcontent[39m: "[32m{"schema_version":1,"font":"Montserrat","profile":{"first_name":"Umut","last_name":"Akt\u00fcrk","headline":"Full Stack Developer","email":"umut.akturk14@gmail.com","phone":"+491623593483","location":"Berlin","website":null,"summary_markdown":"Doing stuff... Hey hey hey...","extra_fields":[{"label":"Citizenship","value":null}]},"links":[{"label":"LinkedIn","url":null},{"label":"GitHub","url":null},{"label":"Chatbot","url":"umutakturk.dev"},{"label":"Portfolio","url":"UmutAkturk14.github.io\/portfolio"}],"experience":[{"company":"Insider","role":"CEO","location":"Remote","start_date":"2024-07-03","end_date":"2025-12-09","is_current":false,"description_markdown":"- Created the company.."},{"company":null,"role":null,"location":null,"start_date":null,"end_date":null,"is_current":false,"description_markdown":null}],"education":[{"school":null,"degree":null,"field":null,"location":null,"start_date":null,"end_date":null,"description_markdown":null}],"skills":[{"name":null,"level":3}],"languages":[{"name":null,"level":null}],"custom_sections":[{"title":"Projects","items":[{"label":null,"description_markdown":null,"start_date":null,"end_date":null}]}],"layout":{"section_order":["profile","links","experience","education","skills","languages","custom_sections"]}}[39m",
+    [34mcreated_at[39m: "[32m2025-12-26 11:04:57[39m",
+    [34mupdated_at[39m: "[32m2025-12-26 12:41:14[39m",
+    [34mdeleted_at[39m: [36mnull[39m,
+  }
+
+[90m= [39m[34;4mApp\Models\Document[39;24m {#6641
+    [34mid[39m: [35m5[39m,
+    [34muser_id[39m: [35m3[39m,
+    [34mtype[39m: "[32mresume[39m",
+    [34mtitle[39m: "[32mFull Stack Developer resume[39m",
+    [34mstatus[39m: "[32mdraft[39m",
+    [34mtemplate_key[39m: "[32mclassic[39m",
+    [34mcontent[39m: "[32m{"schema_version":1,"font":"Montserrat","profile":{"first_name":"Umut","last_name":"Akt\u00fcrk","headline":"Full Stack Developer","email":"umut.akturk14@gmail.com","phone":"+491623593483","location":"Berlin","website":null,"summary_markdown":"Doing stuff... Hey hey hey...","extra_fields":[{"label":"Citizenship","value":null}]},"links":[{"label":"LinkedIn","url":null},{"label":"GitHub","url":null},{"label":"Chatbot","url":"umutakturk.dev"},{"label":"Portfolio","url":"UmutAkturk14.github.io\/portfolio"}],"experience":[{"company":"Insider","role":"CEO","location":"Remote","start_date":"2024-07-03","end_date":"2025-12-09","is_current":false,"description_markdown":"- Created the company.."},{"company":null,"role":null,"location":null,"start_date":null,"end_date":null,"is_current":false,"description_markdown":null}],"education":[{"school":null,"degree":null,"field":null,"location":null,"start_date":null,"end_date":null,"description_markdown":null}],"skills":[{"name":null,"level":3}],"languages":[{"name":null,"level":null}],"custom_sections":[{"title":"Projects","items":[{"label":null,"description_markdown":null,"start_date":null,"end_date":null}]}],"layout":{"section_order":["profile","links","experience","education","skills","languages","custom_sections"]}}[39m",
+    [34mcreated_at[39m: "[32m2025-12-26 11:04:57[39m",
+    [34mupdated_at[39m: "[32m2025-12-26 12:41:14[39m",
+    [34mdeleted_at[39m: [36mnull[39m,
+  }
+
+[90m= [39m[34;4mApp\Models\Document[39;24m {#6641
+    [34mid[39m: [35m5[39m,
+    [34muser_id[39m: [35m3[39m,
+    [34mtype[39m: "[32mresume[39m",
+    [34mtitle[39m: "[32mFull Stack Developer resume[39m",
+    [34mstatus[39m: "[32mdraft[39m",
+    [34mtemplate_key[39m: "[32mclassic[39m",
+    [34mcontent[39m: "[32m{"schema_version":1,"font":"Montserrat","profile":{"first_name":"Umut","last_name":"Akt\u00fcrk","headline":"Full Stack Developer","email":"umut.akturk14@gmail.com","phone":"+491623593483","location":"Berlin","website":null,"summary_markdown":"Doing stuff... Hey hey hey...","extra_fields":[{"label":"Citizenship","value":null}]},"links":[{"label":"LinkedIn","url":null},{"label":"GitHub","url":null},{"label":"Chatbot","url":"umutakturk.dev"},{"label":"Portfolio","url":"UmutAkturk14.github.io\/portfolio"}],"experience":[{"company":"Insider","role":"CEO","location":"Remote","start_date":"2024-07-03","end_date":"2025-12-09","is_current":false,"description_markdown":"- Created the company.."},{"company":null,"role":null,"location":null,"start_date":null,"end_date":null,"is_current":false,"description_markdown":null}],"education":[{"school":null,"degree":null,"field":null,"location":null,"start_date":null,"end_date":null,"description_markdown":null}],"skills":[{"name":null,"level":3}],"languages":[{"name":null,"level":null}],"custom_sections":[{"title":"Projects","items":[{"label":null,"description_markdown":null,"start_date":null,"end_date":null}]}],"layout":{"section_order":["profile","links","experience","education","skills","languages","custom_sections"]}}[39m",
+    [34mcreated_at[39m: "[32m2025-12-26 11:04:57[39m",
+    [34mupdated_at[39m: "[32m2025-12-26 12:41:14[39m",
+    [34mdeleted_at[39m: [36mnull[39m,
+  }
+
