@@ -2156,6 +2156,16 @@ export default function EditDocument({ document }: EditProps) {
         saveDocument(() => setActiveSectionIndex(nextIndex));
     };
 
+    const handleExport = () => {
+        if (form.processing) {
+            return;
+        }
+
+        saveDocument(() => {
+            window.open(`/documents/${document.id}/export`, '_blank');
+        });
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title={document.title} />
@@ -2311,6 +2321,17 @@ export default function EditDocument({ document }: EditProps) {
                                         {isLastSection ? 'Save' : 'Save & Next'}
                                     </Button>
                                 </div>
+
+                                {isLastSection && (
+                                    <Button
+                                        type="button"
+                                        variant="secondary"
+                                        onClick={handleExport}
+                                        disabled={form.processing}
+                                    >
+                                        Export as PDF
+                                    </Button>
+                                )}
 
                                 <Button
                                     type="button"

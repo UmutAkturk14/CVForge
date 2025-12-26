@@ -5,10 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
 use App\Models\Document;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Browsershot\Browsershot;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class DocumentController extends Controller
 {
@@ -79,5 +84,44 @@ class DocumentController extends Controller
         return redirect()
             ->route('documents.index')
             ->with('success', 'Document deleted.');
+    }
+
+    /**
+     * Export a document as a PDF using the current template and font choices.
+     */
+    public function export(Document $document): BinaryFileResponse
+    {
+        $this->authorize('view', $document);
+
+        if (! in_array($document->type, [Document::TYPE_RESUME, Document::TYPE_COVER_LETTER], true)) {
+            abort(400, 'Unsupported document type for export.');
+        }
+
+        $content = $document->content ?? [];
+        $template = $document->template_key ?? 'classic';
+
+        $html = View::make('pdf.document', [
+            'document' => $document,
+            'content' => $content,
+            'template' => $template,
+            'font' => $content['font'] ?? 'Garamond',
+        ])->render();
+
+        $directory = storage_path('app/tmp');
+        if (! is_dir($directory) && ! mkdir($directory, 0755, true) && ! is_dir($directory)) {
+            throw new FileNotFoundException('Unable to create export directory.');
+        }
+
+        $fileName = Str::slug($document->title ?: 'document').'.pdf';
+        $outputPath = $directory.'/'.$fileName;
+
+        Browsershot::html($html)
+            ->format('A4')
+            ->showBackground()
+            ->margins(10, 12, 10, 12)
+            ->noSandbox()
+            ->save($outputPath);
+
+        return response()->download($outputPath, $fileName)->deleteFileAfterSend();
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
+use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\DocumentController;
 
 Route::get('/', function () {
     return Inertia::render('welcome', [
@@ -22,6 +22,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::apiResource('documents', DocumentController::class);
+    Route::get('documents/{document}/export', [DocumentController::class, 'export'])
+        ->name('documents.export');
 });
 
 require __DIR__.'/settings.php';
