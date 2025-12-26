@@ -1,0 +1,87 @@
+{
+    "schema_version": 1,
+
+    "profile": {
+        "first_name": "",
+        "last_name": "",
+        "headline": "",
+        "email": "",
+        "phone": "",
+        "location": "",
+        "website": "",
+        "summary_markdown": "",
+
+        "extra_fields": [
+            { "label": "Citizenship", "value": "" },
+            { "label": "Driving License", "value": "" }
+        ]
+    },
+
+    "links": [
+        { "label": "LinkedIn", "url": "" },
+        { "label": "GitHub", "url": "" }
+    ],
+
+    "experience": [
+        {
+            "company": "",
+            "role": "",
+            "location": "",
+            "start_date": "2024-01-01",
+            "end_date": null,
+            "is_current": true,
+
+            "description_markdown": "- Did X\n- Improved Y by 30%\n- Led Z\n"
+        }
+    ],
+
+    "education": [
+        {
+            "school": "",
+            "degree": "",
+            "field": "",
+            "location": "",
+            "start_date": "2020-09-01",
+            "end_date": "2024-06-01",
+
+            "description_markdown": "- Relevant coursework: ...\n- Thesis: ...\n"
+        }
+    ],
+
+    "skills": [
+        { "name": "Laravel", "level": 4 },
+        { "name": "MySQL", "level": 3 },
+        { "name": "TypeScript", "level": 4 }
+    ],
+
+    "languages": [
+        { "name": "English", "level": "C1" },
+        { "name": "German", "level": "B1" }
+    ],
+
+    "custom_sections": [
+        {
+            "title": "Projects",
+            "items": [
+                {
+                    "label": "CVForge",
+                    "description_markdown": "Built a resume builder with **Laravel** + **React**.\n\n- Feature: drafts\n- Feature: PDF export\n",
+                    "start_date": "2025-01-01",
+                    "end_date": null
+                }
+            ]
+        }
+    ],
+
+    "layout": {
+        "section_order": [
+            "profile",
+            "links",
+            "experience",
+            "education",
+            "skills",
+            "languages",
+            "custom_sections"
+        ]
+    }
+}
