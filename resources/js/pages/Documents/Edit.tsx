@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 type DocumentType = 'resume' | 'cover_letter';
 type DocumentStatus = 'draft' | 'final' | 'archived';
+type TemplateKey = 'classic' | 'modern';
 
 type Document = {
     id: number;
@@ -69,6 +70,7 @@ type ResumeCustomItem = {
 type ResumeCustomSection = { title: string; items: ResumeCustomItem[] };
 type ResumeContent = {
     schema_version?: number;
+    font?: string;
     profile: ResumeProfile;
     links: ResumeLink[];
     experience: ResumeExperience[];
@@ -137,6 +139,7 @@ type Section = {
 
 const defaultResumeContent = (): ResumeContent => ({
     schema_version: 1,
+    font: 'Garamond',
     profile: {
         first_name: '',
         last_name: '',
@@ -286,7 +289,7 @@ export default function EditDocument({ document }: EditProps) {
     const form = useForm({
         title: document.title,
         status: document.status,
-        template_key: document.template_key ?? '',
+        template_key: (document.template_key as TemplateKey | null) ?? 'classic',
         content: initialContent,
     });
 
@@ -489,6 +492,33 @@ export default function EditDocument({ document }: EditProps) {
         event.preventDefault();
         saveDocument();
     };
+
+    const formatDate = (value: string | null | undefined): string => {
+        if (!value) {
+            return '';
+        }
+
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+            return value;
+        }
+
+        return date.toLocaleDateString(undefined, {
+            month: 'short',
+            year: 'numeric',
+        });
+    };
+
+    const renderLines = (text?: string) =>
+        (text ?? '')
+            .split('\n')
+            .filter((line) => line.trim() !== '')
+            .map((line, index) => (
+                <p key={`${line}-${index}`} className="text-sm leading-relaxed">
+                    {line}
+                </p>
+            ));
 
     const renderResumeProfile = (resume: ResumeContent) => (
         <div className="space-y-4">
@@ -1734,10 +1764,311 @@ export default function EditDocument({ document }: EditProps) {
                             }
                         />
                     </div>
-                ))}
+                    ))}
             </div>
         </div>
     );
+
+    const ResumePreview = ({
+        resume,
+        variant,
+    }: {
+        resume: ResumeContent;
+        variant: TemplateKey;
+    }) => {
+        const isClassic = variant === 'classic';
+        const cardClass = isClassic
+            ? 'bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-50'
+            : 'bg-gradient-to-br from-indigo-50 to-white dark:from-neutral-900 dark:to-neutral-950 shadow-sm ring-1 ring-black/5 dark:ring-white/5';
+
+        const pillClass = isClassic
+            ? 'px-0 text-neutral-700 underline decoration-neutral-300 decoration-1 underline-offset-4 dark:text-neutral-200 dark:decoration-neutral-600'
+            : 'rounded-full bg-indigo-50 px-3 py-1 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-200';
+        const fontFamily =
+            resume.font === 'Times New Roman'
+                ? '"Times New Roman", Times, serif'
+                : resume.font === 'Montserrat'
+                    ? '"Montserrat", "Helvetica Neue", Arial, sans-serif'
+                    : 'Garamond, "Times New Roman", serif';
+
+        return (
+            <div className="flex flex-col gap-6" style={{ fontFamily }}>
+                <div className={`rounded-xl p-6 ${cardClass}`}>
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
+                        <div>
+                            <h2 className="text-2xl font-semibold text-foreground">
+                                {`${resume.profile.first_name} ${resume.profile.last_name}`.trim() ||
+                                    'Your Name'}
+                            </h2>
+                            <p className="text-sm text-muted-foreground">
+                                {resume.profile.headline || 'Role / Headline'}
+                            </p>
+                        </div>
+                        <div className="space-y-1 text-right text-xs text-muted-foreground">
+                            {resume.profile.email && <div>{resume.profile.email}</div>}
+                            {resume.profile.phone && <div>{resume.profile.phone}</div>}
+                            {resume.profile.location && (
+                                <div>{resume.profile.location}</div>
+                            )}
+                            {resume.profile.website && (
+                                <div className="truncate">{resume.profile.website}</div>
+                            )}
+                        </div>
+                    </div>
+                    {resume.profile.summary_markdown && (
+                        <div className="mt-4 space-y-2">
+                            <h3 className="text-sm font-semibold text-foreground">
+                                Summary
+                            </h3>
+                            <div className="space-y-1 text-sm text-muted-foreground leading-relaxed">
+                                {renderLines(resume.profile.summary_markdown)}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {resume.links.length > 0 && (
+                    <div
+                        className={`rounded-xl p-4 ${cardClass}`}
+                    >
+                        <h3 className="text-sm font-semibold text-foreground">
+                            Links
+                        </h3>
+                        <div className="mt-2 flex flex-wrap gap-2 text-sm">
+                            {resume.links.map((link, index) => (
+                                <span key={`${link.label}-${index}`} className={pillClass}>
+                                    {link.label || 'Link'} {link.url && `· ${link.url}`}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {resume.experience.length > 0 && (
+                    <div
+                        className={`rounded-xl p-4 ${cardClass}`}
+                    >
+                        <h3 className="text-sm font-semibold text-foreground">
+                            Experience
+                        </h3>
+                        <div className="mt-3 space-y-4">
+                            {resume.experience.map((exp, index) => (
+                                <div key={`${exp.company}-${index}`} className="space-y-1">
+                                    <div className="flex flex-wrap justify-between gap-2">
+                                        <div>
+                                            <p className="text-sm font-medium text-foreground">
+                                                {exp.role || 'Role'} · {exp.company || 'Company'}
+                                            </p>
+                                            <p className="text-xs text-muted-foreground">
+                                                {exp.location}
+                                            </p>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">
+                                            {formatDate(exp.start_date)} -{' '}
+                                            {exp.is_current
+                                                ? 'Present'
+                                                : formatDate(exp.end_date)}
+                                        </p>
+                                    </div>
+                                    <div className="text-sm text-muted-foreground leading-relaxed">
+                                        {renderLines(exp.description_markdown)}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {resume.education.length > 0 && (
+                    <div
+                        className={`rounded-xl p-4 ${cardClass}`}
+                    >
+                        <h3 className="text-sm font-semibold text-foreground">
+                            Education
+                        </h3>
+                        <div className="mt-3 space-y-4">
+                            {resume.education.map((edu, index) => (
+                                <div key={`${edu.school}-${index}`} className="space-y-1">
+                                    <div className="flex flex-wrap justify-between gap-2">
+                                        <div>
+                                            <p className="text-sm font-medium text-foreground">
+                                                {edu.degree || 'Degree'} · {edu.school || 'School'}
+                                            </p>
+                                            <p className="text-xs text-muted-foreground">
+                                                {edu.field}
+                                            </p>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">
+                                            {formatDate(edu.start_date)} - {formatDate(edu.end_date)}
+                                        </p>
+                                    </div>
+                                    <div className="text-sm text-muted-foreground leading-relaxed">
+                                        {renderLines(edu.description_markdown)}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {(resume.skills.length > 0 || resume.languages.length > 0) && (
+                    <div
+                        className={`rounded-xl p-4 ${cardClass}`}
+                    >
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <h3 className="text-sm font-semibold text-foreground">
+                                    Skills
+                                </h3>
+                                <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                                    {resume.skills.map((skill, index) => (
+                                        <span key={`${skill.name}-${index}`} className={pillClass}>
+                                            {skill.name || 'Skill'}
+                                            {skill.level ? ` · ${skill.level}/5` : ''}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-semibold text-foreground">
+                                    Languages
+                                </h3>
+                                <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                                    {resume.languages.map((language, index) => (
+                                        <span
+                                            key={`${language.name}-${index}`}
+                                            className={pillClass}
+                                        >
+                                            {language.name || 'Language'}
+                                            {language.level ? ` · ${language.level}` : ''}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {resume.custom_sections.length > 0 && (
+                    <div
+                        className={`rounded-xl p-4 ${cardClass}`}
+                    >
+                        <h3 className="text-sm font-semibold text-foreground">
+                            Custom Sections
+                        </h3>
+                        <div className="mt-3 space-y-4">
+                            {resume.custom_sections.map((section, index) => (
+                                <div key={`${section.title}-${index}`} className="space-y-2">
+                                    <p className="text-sm font-medium text-foreground">
+                                        {section.title || 'Section'}
+                                    </p>
+                                    {section.items.map((item, itemIndex) => (
+                                        <div
+                                            key={`${section.title}-${itemIndex}`}
+                                            className="space-y-1"
+                                        >
+                                            <p className="text-sm text-muted-foreground">
+                                                {item.label || 'Item'}{' '}
+                                                {(item.start_date || item.end_date) && (
+                                                    <span className="text-xs">
+                                                        ({formatDate(item.start_date)} -{' '}
+                                                        {formatDate(item.end_date)})
+                                                    </span>
+                                                )}
+                                            </p>
+                                            <div className="text-sm text-muted-foreground leading-relaxed">
+                                                {renderLines(item.description_markdown)}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    const CoverLetterPreview = ({
+        cover,
+        variant,
+    }: {
+        cover: CoverLetterContent;
+        variant: TemplateKey;
+    }) => {
+        const cardClass =
+            variant === 'modern'
+                ? 'bg-gradient-to-br from-emerald-50 to-white dark:from-neutral-900 dark:to-neutral-950'
+                : 'bg-white/80 dark:bg-neutral-900/80';
+
+        return (
+            <div className="flex flex-col gap-6">
+                <div
+                    className={`rounded-xl p-6 ${cardClass}`}
+                >
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                            <h2 className="text-xl font-semibold text-foreground">
+                                {cover.sender.full_name || 'Your Name'}
+                            </h2>
+                            <div className="space-y-1 text-sm text-muted-foreground">
+                                {cover.sender.email && <div>{cover.sender.email}</div>}
+                                {cover.sender.phone && <div>{cover.sender.phone}</div>}
+                                {cover.sender.location && <div>{cover.sender.location}</div>}
+                            </div>
+                        </div>
+                        <div className="space-y-1 text-right text-xs text-muted-foreground">
+                            {cover.meta.company_name && <div>{cover.meta.company_name}</div>}
+                            {cover.meta.job_title && <div>{cover.meta.job_title}</div>}
+                            {cover.meta.job_location && <div>{cover.meta.job_location}</div>}
+                            {cover.meta.job_reference && (
+                                <div>Ref: {cover.meta.job_reference}</div>
+                            )}
+                            {cover.meta.job_url && (
+                                <div className="truncate">{cover.meta.job_url}</div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="mt-4 space-y-3">
+                        {cover.blocks
+                            .filter((block) => block.enabled)
+                            .map((block, index) => (
+                                <div key={`${block.type}-${index}`} className="space-y-1">
+                                    {block.type !== 'date' && (
+                                        <p className="text-sm font-medium text-foreground">
+                                            {block.type.charAt(0).toUpperCase() +
+                                                block.type.slice(1)}
+                                        </p>
+                                    )}
+                                    <div className="text-sm text-muted-foreground leading-relaxed">
+                                        {renderLines(
+                                            block.type === 'date'
+                                                ? block.value
+                                                : block.markdown,
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                    </div>
+
+                    {cover.custom_sections
+                        .filter((section) => section.enabled)
+                        .map((section, index) => (
+                            <div key={`${section.title}-${index}`} className="mt-4 space-y-1">
+                                <p className="text-sm font-semibold text-foreground">
+                                    {section.title || 'Section'}
+                                </p>
+                                <div className="text-sm text-muted-foreground leading-relaxed">
+                                    {renderLines(section.markdown)}
+                                </div>
+                            </div>
+                        ))}
+                </div>
+            </div>
+        );
+    };
 
     const sections: Section[] = useMemo(() => {
         if (document.type === 'resume') {
@@ -1808,6 +2139,7 @@ export default function EditDocument({ document }: EditProps) {
     }, [content, document.type]);
 
     const currentSection = sections[activeSectionIndex] ?? sections[0];
+    const templateKey = (form.data.template_key as TemplateKey) ?? 'classic';
     const isFirstSection = activeSectionIndex === 0;
     const isLastSection = activeSectionIndex === sections.length - 1;
 
@@ -1899,23 +2231,49 @@ export default function EditDocument({ document }: EditProps) {
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="template_key">Template key</Label>
-                                <Input
-                                    id="template_key"
-                                    name="template_key"
-                                    value={form.data.template_key ?? ''}
-                                    onChange={(event) =>
-                                        form.setData(
-                                            'template_key',
-                                            event.target.value,
-                                        )
-                                    }
-                                    placeholder="Optional"
-                                    aria-invalid={Boolean(form.errors.template_key)}
-                                    autoComplete="off"
-                                />
-                                <InputError message={form.errors.template_key} />
+                            <div className="grid gap-3 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="template_key">Template</Label>
+                                    <select
+                                        id="template_key"
+                                        name="template_key"
+                                        value={form.data.template_key ?? 'classic'}
+                                        onChange={(event) =>
+                                            form.setData(
+                                                'template_key',
+                                                event.target
+                                                    .value as TemplateKey,
+                                            )
+                                        }
+                                        className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px]"
+                                    >
+                                        <option value="classic">Classic</option>
+                                        <option value="modern">Modern</option>
+                                    </select>
+                                    <InputError message={form.errors.template_key} />
+                                </div>
+
+                                {document.type === 'resume' && (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="font">Font</Label>
+                                        <select
+                                            id="font"
+                                            name="font"
+                                            value={(content as ResumeContent).font ?? 'Garamond'}
+                                            onChange={(event) =>
+                                                setContent((prev) => ({
+                                                    ...(prev as ResumeContent),
+                                                    font: event.target.value,
+                                                }))
+                                            }
+                                            className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px]"
+                                        >
+                                            <option value="Garamond">Garamond</option>
+                                            <option value="Times New Roman">Times New Roman</option>
+                                            <option value="Montserrat">Montserrat</option>
+                                        </select>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="space-y-6">
@@ -1943,10 +2301,14 @@ export default function EditDocument({ document }: EditProps) {
                                     <Button
                                         type="button"
                                         variant="secondary"
-                                        disabled={isLastSection || form.processing}
-                                        onClick={() => handleNavigate(1)}
+                                        disabled={form.processing}
+                                        onClick={() =>
+                                            isLastSection
+                                                ? saveDocument()
+                                                : handleNavigate(1)
+                                        }
                                     >
-                                        Save & Next
+                                        {isLastSection ? 'Save' : 'Save & Next'}
                                     </Button>
                                 </div>
 
@@ -1966,17 +2328,17 @@ export default function EditDocument({ document }: EditProps) {
 
                 <div className="hidden w-full lg:block lg:w-1/2">
                     <div className="h-full min-h-[480px] rounded-xl border border-dashed border-sidebar-border/70 bg-muted/40 p-6 text-sm text-muted-foreground shadow-inner dark:border-sidebar-border">
-                        <div className="mb-3 flex items-center justify-between">
-                            <span className="font-medium text-foreground">
-                                JSON Preview
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                                Live data
-                            </span>
-                        </div>
-                        <pre className="max-h-[70vh] overflow-auto rounded-lg bg-background/60 p-3 text-xs text-foreground">
-{JSON.stringify(content, null, 2)}
-                        </pre>
+                        {document.type === 'resume' ? (
+                            <ResumePreview
+                                resume={content as ResumeContent}
+                                variant={templateKey}
+                            />
+                        ) : (
+                            <CoverLetterPreview
+                                cover={content as CoverLetterContent}
+                                variant={templateKey}
+                            />
+                        )}
                     </div>
                 </div>
             </div>

@@ -1,6 +1,8 @@
 {
     "schema_version": 1,
 
+    "font": "Garamond",
+
     "profile": {
         "first_name": "",
         "last_name": "",
