@@ -449,6 +449,47 @@ export default function EditDocument({ document }: EditProps) {
                                         </select>
                                     </div>
                                 )}
+                                {document.type === 'cover_letter' && (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="cover_font">Font</Label>
+                                        <select
+                                            id="cover_font"
+                                            name="cover_font"
+                                            value={(content as CoverLetterContent).font ?? 'Garamond'}
+                                            onChange={(event) =>
+                                                setContent((prev) => ({
+                                                    ...(prev as CoverLetterContent),
+                                                    font: event.target.value,
+                                                }))
+                                            }
+                                            className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px]"
+                                        >
+                                            <option value="Garamond">Garamond</option>
+                                            <option value="Times New Roman">Times New Roman</option>
+                                            <option value="Montserrat">Montserrat</option>
+                                        </select>
+                                    </div>
+                                )}
+                                <div className="space-y-2">
+                                    <Label htmlFor="language">Language</Label>
+                                    <select
+                                        id="language"
+                                        name="language"
+                                        value={(content as ResumeContent | CoverLetterContent).language ?? 'en'}
+                                        onChange={(event) =>
+                                            setContent((prev) =>
+                                                document.type === 'resume'
+                                                    ? { ...(prev as ResumeContent), language: event.target.value }
+                                                    : { ...(prev as CoverLetterContent), language: event.target.value },
+                                            )
+                                        }
+                                        className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px]"
+                                    >
+                                        <option value="en">English</option>
+                                        <option value="de">German</option>
+                                        <option value="fr">French</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div className="space-y-6">

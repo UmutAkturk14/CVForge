@@ -1,5 +1,26 @@
 import { ResumeContent, TemplateKey } from '../types';
 
+const escapeHtml = (value: string): string =>
+    value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+const applyFormatting = (value: string): string => {
+    let html = escapeHtml(value);
+
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/_(.+?)_/g, '<em>$1</em>');
+    html = html.replace(
+        /\[(.+?)\]\((.+?)\)/g,
+        '<a href="$2" target="_blank" rel="noreferrer">$1</a>',
+    );
+
+    return html;
+};
+
 const formatDate = (value: string | null | undefined): string => {
     if (!value) {
         return '';
@@ -22,9 +43,11 @@ const renderLines = (text?: string) =>
         .split('\n')
         .filter((line) => line.trim() !== '')
         .map((line, index) => (
-            <p key={`${line}-${index}`} className="text-sm leading-relaxed">
-                {line}
-            </p>
+            <p
+                key={`${line}-${index}`}
+                className="text-sm leading-relaxed [&_a]:font-medium [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:opacity-80"
+                dangerouslySetInnerHTML={{ __html: applyFormatting(line) }}
+            />
         ));
 
 type ResumePreviewProps = {
@@ -83,11 +106,17 @@ export function ResumePreview({ resume, variant }: ResumePreviewProps) {
                 {resume.links.length > 0 && (
                     <div className={`${sectionWrapperClass} ${containerClass}`}>
                         <h3 className={sectionTitleClass}>Links</h3>
-                        <div className="mt-2 flex flex-wrap gap-2 text-sm">
+                        <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
                             {resume.links.map((link, index) => (
-                                <span key={`${link.label}-${index}`} className={pillClass}>
-                                    {link.label || 'Link'} {link.url && `· ${link.url}`}
-                                </span>
+                                <a
+                                    key={`${link.label}-${index}`}
+                                    href={link.url || undefined}
+                                    className={`${pillClass} underline underline-offset-2 hover:opacity-80`}
+                                    target={link.url ? '_blank' : undefined}
+                                    rel={link.url ? 'noreferrer' : undefined}
+                                >
+                                    {link.label || 'Link'}
+                                </a>
                             ))}
                         </div>
                     </div>
@@ -251,13 +280,17 @@ export function ResumePreview({ resume, variant }: ResumePreviewProps) {
                         <span className={sectionTitleClass}>LINKS</span>
                         <span className="h-px flex-1 bg-neutral-300 dark:bg-neutral-700" />
                     </div>
-                    <div className="mt-2 grid gap-2 text-sm sm:grid-cols-2">
+                    <div className="mt-2 flex flex-wrap items-center justify-center gap-4 text-sm">
                         {resume.links.map((link, index) => (
-                            <div key={`${link.label}-${index}`} className="flex items-center justify-between text-neutral-800 dark:text-neutral-200">
-                                <span>{link.label || 'Link'}</span>
-                                <span className="flex-1 border-b border-dotted border-neutral-400 px-2 dark:border-neutral-600" />
-                                <span className="truncate text-right text-xs">{link.url}</span>
-                            </div>
+                            <a
+                                key={`${link.label}-${index}`}
+                                href={link.url || undefined}
+                                className="text-neutral-800 underline underline-offset-2 hover:opacity-80 dark:text-neutral-200"
+                                target={link.url ? '_blank' : undefined}
+                                rel={link.url ? 'noreferrer' : undefined}
+                            >
+                                {link.label || 'Link'}
+                            </a>
                         ))}
                     </div>
                 </div>

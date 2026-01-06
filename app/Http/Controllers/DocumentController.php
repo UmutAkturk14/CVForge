@@ -9,7 +9,6 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 use Spatie\Browsershot\Browsershot;
@@ -41,13 +40,29 @@ class DocumentController extends Controller
     {
         $this->authorize('create', Document::class);
 
+        $importedContent = $request->validated('content', []);
+        $templateKey = $request->validated('template_key');
+
+        if ($request->filled('import_from')) {
+            $source = Document::query()
+                ->where('user_id', $request->user()->id)
+                ->findOrFail($request->validated('import_from'));
+
+            if ($source->type !== $request->validated('type')) {
+                abort(422, 'Import document type must match the selected type.');
+            }
+
+            $importedContent = $source->content ?? [];
+            $templateKey = $templateKey ?? $source->template_key;
+        }
+
         $document = Document::create([
             'user_id' => $request->user()->id,
             'type' => $request->validated('type'),
             'title' => $request->validated('title'),
             'status' => $request->validated('status', Document::STATUS_DRAFT),
-            'template_key' => $request->validated('template_key'),
-            'content' => $request->validated('content', []),
+            'template_key' => $templateKey,
+            'content' => $importedContent,
         ]);
 
         return redirect()
@@ -112,7 +127,7 @@ class DocumentController extends Controller
             throw new FileNotFoundException('Unable to create export directory.');
         }
 
-        $fileName = Str::slug($document->title ?: 'document').'.pdf';
+        $fileName = $this->buildExportFileName($document, $content);
         $outputPath = $directory.'/'.$fileName;
 
         Browsershot::html($html)
@@ -123,5 +138,35 @@ class DocumentController extends Controller
             ->save($outputPath);
 
         return response()->download($outputPath, $fileName)->deleteFileAfterSend();
+    }
+
+    protected function buildExportFileName(Document $document, array $content): string
+    {
+        $typeLabel = $document->type === Document::TYPE_COVER_LETTER ? 'Cover letter' : 'Resume';
+
+        $resumeName = trim(($content['profile']['first_name'] ?? '').' '.($content['profile']['last_name'] ?? ''));
+        $coverLetterName = trim($content['sender']['full_name'] ?? '');
+        $fullName = $document->type === Document::TYPE_COVER_LETTER ? $coverLetterName : $resumeName;
+
+        $company = $document->type === Document::TYPE_COVER_LETTER ? ($content['meta']['company_name'] ?? '') : '';
+
+        $parts = [$typeLabel];
+        if ($fullName !== '') {
+            $parts[] = $fullName;
+        }
+
+        $base = implode(', ', $parts);
+        if ($company !== '') {
+            $base .= '. '.$company;
+        }
+
+        $base = trim($base, ' .,');
+        $base = $base === '' ? 'document' : $base;
+
+        $sanitized = preg_replace('/[\\\\\/]+/', '-', $base);
+        $sanitized = preg_replace('/\s+/', ' ', $sanitized);
+        $sanitized = substr($sanitized, 0, 180);
+
+        return $sanitized.'.pdf';
     }
 }

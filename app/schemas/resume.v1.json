@@ -2,6 +2,7 @@
     "schema_version": 1,
 
     "font": "Garamond",
+    "language": "en",
 
     "profile": {
         "first_name": "",

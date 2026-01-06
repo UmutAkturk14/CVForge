@@ -1,0 +1,36 @@
+{
+    "resume": {
+        "en": {
+            "summary": "Summary",
+            "experience": "Experience",
+            "education": "Education",
+            "skills": "Skills",
+            "languages": "Languages",
+            "links": "Links",
+            "custom_sections": "Additional"
+        },
+        "de": {
+            "summary": "Profil",
+            "experience": "Berufserfahrung",
+            "education": "Ausbildung",
+            "skills": "Fähigkeiten",
+            "languages": "Sprachen",
+            "links": "Links",
+            "custom_sections": "Zusätzliches"
+        },
+        "fr": {
+            "summary": "Profil",
+            "experience": "Expérience",
+            "education": "Formation",
+            "skills": "Compétences",
+            "languages": "Langues",
+            "links": "Liens",
+            "custom_sections": "Supplémentaire"
+        }
+    },
+    "cover_letter": {
+        "en": { "to": "To", "subject": "Subject" },
+        "de": { "to": "An", "subject": "Betreff" },
+        "fr": { "to": "À", "subject": "Objet" }
+    }
+}

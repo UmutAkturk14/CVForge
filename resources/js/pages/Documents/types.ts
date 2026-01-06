@@ -56,6 +56,7 @@ export type ResumeCustomSection = { title: string; items: ResumeCustomItem[] };
 export type ResumeContent = {
     schema_version?: number;
     font?: string;
+    language?: string;
     profile: ResumeProfile;
     links: ResumeLink[];
     experience: ResumeExperience[];
@@ -69,11 +70,8 @@ export type ResumeContent = {
 export type CoverLetterMeta = {
     company_name: string;
     job_title: string;
-    job_location: string;
     recipient_name: string;
     recipient_title: string;
-    job_reference: string;
-    job_url: string;
 };
 export type CoverLetterSender = {
     full_name: string;
@@ -100,11 +98,14 @@ export type CoverLetterCustomSection = {
 };
 export type CoverLetterContent = {
     schema_version?: number;
+    font?: string;
+    language?: string;
     meta: CoverLetterMeta;
     sender: CoverLetterSender;
     settings: CoverLetterSettings;
     blocks: CoverLetterBlock[];
     custom_sections: CoverLetterCustomSection[];
+    signature_font?: string;
     layout: {
         include_sender_header: boolean;
         include_meta_line: boolean;
@@ -125,6 +126,7 @@ export type Section = {
 export const defaultResumeContent = (): ResumeContent => ({
     schema_version: 1,
     font: 'Garamond',
+    language: 'en',
     profile: {
         first_name: '',
         last_name: '',
@@ -192,14 +194,13 @@ export const defaultResumeContent = (): ResumeContent => ({
 
 export const defaultCoverLetterContent = (): CoverLetterContent => ({
     schema_version: 1,
+    font: 'Garamond',
+    language: 'en',
     meta: {
         company_name: '',
         job_title: '',
-        job_location: '',
         recipient_name: '',
         recipient_title: '',
-        job_reference: '',
-        job_url: '',
     },
     sender: {
         full_name: '',
@@ -217,43 +218,19 @@ export const defaultCoverLetterContent = (): CoverLetterContent => ({
         length: 'medium',
     },
     blocks: [
-        { type: 'date', enabled: true, value: '' },
-        {
-            type: 'recipient',
-            enabled: true,
-            markdown: 'Dear {{recipient_name}},',
-        },
-        {
-            type: 'opening',
-            enabled: true,
-            markdown:
-                'I’m writing to apply for the **{{job_title}}** role at **{{company_name}}**.',
-        },
         {
             type: 'body',
             enabled: true,
-            markdown:
-                'Highlight 2-3 wins that match the role.\n- Delivered ...\n- Improved ...\n- Collaborated on ...\n',
-        },
-        {
-            type: 'closing',
-            enabled: true,
-            markdown:
-                'Thank you for your time and consideration. I’d welcome the chance to discuss how I can contribute.',
+            markdown: '',
         },
         {
             type: 'signature',
             enabled: true,
-            markdown: 'Sincerely,\n\n**{{full_name}}**',
-        },
-    ],
-    custom_sections: [
-        {
-            title: 'Additional Notes',
-            enabled: false,
             markdown: '',
         },
     ],
+    custom_sections: [],
+    signature_font: 'Alex Brush',
     layout: {
         include_sender_header: true,
         include_meta_line: true,

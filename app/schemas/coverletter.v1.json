@@ -1,14 +1,13 @@
 {
     "schema_version": 1,
+    "font": "Garamond",
+    "language": "en",
 
     "meta": {
         "company_name": "",
         "job_title": "",
-        "job_location": "",
         "recipient_name": "",
-        "recipient_title": "",
-        "job_reference": "",
-        "job_url": ""
+        "recipient_title": ""
     },
 
     "sender": {
@@ -30,44 +29,20 @@
 
     "blocks": [
         {
-            "type": "date",
-            "enabled": true,
-            "value": ""
-        },
-        {
-            "type": "recipient",
-            "enabled": true,
-            "markdown": "Dear {{recipient_name}},"
-        },
-        {
-            "type": "opening",
-            "enabled": true,
-            "markdown": "I’m writing to apply for the **{{job_title}}** role at **{{company_name}}**."
-        },
-        {
             "type": "body",
             "enabled": true,
-            "markdown": "In my recent work, I:\n\n- Delivered ...\n- Improved ...\n- Collaborated on ...\n\nI’m excited about {{company_name}} because ...\n"
-        },
-        {
-            "type": "closing",
-            "enabled": true,
-            "markdown": "Thank you for your time and consideration. I’d welcome the chance to discuss how I can contribute."
+            "markdown": ""
         },
         {
             "type": "signature",
             "enabled": true,
-            "markdown": "Sincerely,\n\n**{{full_name}}**"
-        }
-    ],
-
-    "custom_sections": [
-        {
-            "title": "Additional Notes",
-            "enabled": false,
             "markdown": ""
         }
     ],
+
+    "custom_sections": [],
+
+    "signature_font": "Alex Brush",
 
     "layout": {
         "include_sender_header": true,

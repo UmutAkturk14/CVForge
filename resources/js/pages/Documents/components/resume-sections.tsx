@@ -49,6 +49,96 @@ export const createResumeSections = ({
     updateCustomSection,
     updateContent,
 }: ResumeSectionsProps): Section[] => {
+    let summaryRef: HTMLTextAreaElement | null = null;
+    const experienceRefs = new Map<number, HTMLTextAreaElement | null>();
+    const educationRefs = new Map<number, HTMLTextAreaElement | null>();
+
+    const formatSelection = (
+        current: string,
+        textarea: HTMLTextAreaElement | null,
+        prefix: string,
+        suffix: string,
+        fallback: string,
+    ): string => {
+        if (!textarea) {
+            return `${current}${prefix}${fallback}${suffix}`;
+        }
+
+        const selectionStart = textarea.selectionStart ?? current.length;
+        const selectionEnd = textarea.selectionEnd ?? current.length;
+        const hasSelection = selectionEnd > selectionStart;
+        const selected = hasSelection ? current.slice(selectionStart, selectionEnd) : fallback;
+
+        return (
+            current.slice(0, selectionStart) +
+            prefix +
+            selected +
+            suffix +
+            current.slice(selectionEnd)
+        );
+    };
+
+    const handleFormatting = (
+        event: React.MouseEvent<HTMLButtonElement>,
+        textarea: HTMLTextAreaElement | null,
+        current: string,
+        onUpdate: (value: string) => void,
+        prefix: string,
+        suffix: string,
+        fallback: string,
+    ) => {
+        event.preventDefault();
+        event.stopPropagation();
+        textarea?.focus();
+        onUpdate(formatSelection(current, textarea, prefix, suffix, fallback));
+    };
+
+    const renderFormattingControls = (
+        getTextarea: () => HTMLTextAreaElement | null,
+        current: string,
+        onUpdate: (value: string) => void,
+    ) => (
+        <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span>Formatting</span>
+            <button
+                type="button"
+                className="rounded border border-border px-2 py-1 hover:bg-muted/60"
+                onMouseDown={(event) =>
+                    handleFormatting(event, getTextarea(), current, onUpdate, '**', '**', 'bold text')
+                }
+            >
+                Bold
+            </button>
+            <button
+                type="button"
+                className="rounded border border-border px-2 py-1 hover:bg-muted/60"
+                onMouseDown={(event) =>
+                    handleFormatting(event, getTextarea(), current, onUpdate, '_', '_', 'italic text')
+                }
+            >
+                Italic
+            </button>
+            <button
+                type="button"
+                className="rounded border border-border px-2 py-1 hover:bg-muted/60"
+                onMouseDown={(event) =>
+                    handleFormatting(event, getTextarea(), current, onUpdate, '\n- ', '', 'bullet item')
+                }
+            >
+                Bullet
+            </button>
+            <button
+                type="button"
+                className="rounded border border-border px-2 py-1 hover:bg-muted/60"
+                onMouseDown={(event) =>
+                    handleFormatting(event, getTextarea(), current, onUpdate, '[', '](https://)', 'Link text')
+                }
+            >
+                Link
+            </button>
+        </div>
+    );
+
     const renderResumeProfile = () => (
         <div className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
@@ -86,8 +176,16 @@ export const createResumeSections = ({
                 </div>
                 <div className="space-y-2 sm:col-span-2">
                     <Label htmlFor="summary_markdown">Summary</Label>
+                    {renderFormattingControls(
+                        () => summaryRef,
+                        resume.profile.summary_markdown,
+                        (value) => updateResumeField('summary_markdown', value),
+                    )}
                     <textarea
                         id="summary_markdown"
+                        ref={(element) => {
+                            summaryRef = element;
+                        }}
                         value={resume.profile.summary_markdown}
                         onChange={(event) =>
                             updateResumeField(
@@ -342,18 +440,32 @@ export const createResumeSections = ({
                                 />
                                 Currently working here
                             </label>
-                            <textarea
-                                placeholder="Description"
-                                value={exp.description_markdown}
-                                onChange={(event) =>
-                                    updateResumeArrayItem('experience', index, {
-                                        ...exp,
-                                        description_markdown: event.target.value,
-                                    })
-                                }
-                                rows={3}
-                                className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:col-span-2"
-                            />
+                            <div className="space-y-2 sm:col-span-2">
+                                {renderFormattingControls(
+                                    () => experienceRefs.get(index) ?? null,
+                                    exp.description_markdown,
+                                    (value) =>
+                                        updateResumeArrayItem('experience', index, {
+                                            ...exp,
+                                            description_markdown: value,
+                                        }),
+                                )}
+                                <textarea
+                                    ref={(element) => {
+                                        experienceRefs.set(index, element);
+                                    }}
+                                    placeholder="Description"
+                                    value={exp.description_markdown}
+                                    onChange={(event) =>
+                                        updateResumeArrayItem('experience', index, {
+                                            ...exp,
+                                            description_markdown: event.target.value,
+                                        })
+                                    }
+                                    rows={3}
+                                    className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                                />
+                            </div>
                         </div>
                     </div>
                 ))}
@@ -480,18 +592,32 @@ export const createResumeSections = ({
                                     }
                                 />
                             </div>
-                            <textarea
-                                placeholder="Description"
-                                value={edu.description_markdown}
-                                onChange={(event) =>
-                                    updateResumeArrayItem('education', index, {
-                                        ...edu,
-                                        description_markdown: event.target.value,
-                                    })
-                                }
-                                rows={3}
-                                className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 sm:col-span-2"
-                            />
+                            <div className="space-y-2 sm:col-span-2">
+                                {renderFormattingControls(
+                                    () => educationRefs.get(index) ?? null,
+                                    edu.description_markdown,
+                                    (value) =>
+                                        updateResumeArrayItem('education', index, {
+                                            ...edu,
+                                            description_markdown: value,
+                                        }),
+                                )}
+                                <textarea
+                                    ref={(element) => {
+                                        educationRefs.set(index, element);
+                                    }}
+                                    placeholder="Description"
+                                    value={edu.description_markdown}
+                                    onChange={(event) =>
+                                        updateResumeArrayItem('education', index, {
+                                            ...edu,
+                                            description_markdown: event.target.value,
+                                        })
+                                    }
+                                    rows={3}
+                                    className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                                />
+                            </div>
                         </div>
                     </div>
                 ))}

@@ -56,6 +56,7 @@ export default function DocumentsIndex({
     const form = useForm({
         type: (filters.type as DocumentType) ?? 'resume',
         title: '',
+        import_from: '',
     });
 
     const submit = (event: FormEvent<HTMLFormElement>) => {
@@ -99,12 +100,10 @@ export default function DocumentsIndex({
                                 id="type"
                                 name="type"
                                 value={form.data.type}
-                                onChange={(event) =>
-                                    form.setData(
-                                        'type',
-                                        event.target.value as DocumentType,
-                                    )
-                                }
+                                onChange={(event) => {
+                                    form.setData('type', event.target.value as DocumentType);
+                                    form.setData('import_from', '');
+                                }}
                                 className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px]"
                             >
                                 <option value="resume">Resume</option>
@@ -127,6 +126,29 @@ export default function DocumentsIndex({
                                 autoComplete="off"
                             />
                             <InputError message={form.errors.title} />
+                        </div>
+
+                        <div className="space-y-2 sm:col-span-3">
+                            <Label htmlFor="import_from">Import from existing</Label>
+                            <select
+                                id="import_from"
+                                name="import_from"
+                                value={form.data.import_from}
+                                onChange={(event) =>
+                                    form.setData('import_from', event.target.value)
+                                }
+                                className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px]"
+                            >
+                                <option value="">Do not import</option>
+                                {documents.data
+                                    .filter((doc) => doc.type === form.data.type)
+                                    .map((doc) => (
+                                        <option key={doc.id} value={doc.id}>
+                                            {doc.title} ({doc.type})
+                                        </option>
+                                    ))}
+                            </select>
+                            <InputError message={form.errors.import_from} />
                         </div>
 
                         <div className="sm:col-span-3">
