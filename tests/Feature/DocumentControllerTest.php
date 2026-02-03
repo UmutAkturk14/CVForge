@@ -204,11 +204,12 @@ class DocumentControllerTest extends TestCase
         ]);
 
         $mock = Mockery::mock('alias:Spatie\\Browsershot\\Browsershot');
-        $mock->shouldReceive('html')->once()->with(Mockery::type('string'))->andReturnSelf();
-        $mock->shouldReceive('format')->once()->with('A4')->andReturnSelf();
+        $mock->shouldReceive('html')->twice()->with(Mockery::type('string'))->andReturnSelf();
+        $mock->shouldReceive('evaluate')->once()->with(Mockery::type('string'))->andReturn('210x297');
         $mock->shouldReceive('showBackground')->once()->andReturnSelf();
         $mock->shouldReceive('margins')->once()->with(10, 12, 10, 12)->andReturnSelf();
-        $mock->shouldReceive('noSandbox')->once()->andReturnSelf();
+        $mock->shouldReceive('noSandbox')->twice()->andReturnSelf();
+        $mock->shouldReceive('paperSize')->once()->with(210.0, 297.0, 'px')->andReturnSelf();
         $mock->shouldReceive('save')->once()->with(Mockery::type('string'))->andReturnUsing(
             static function (string $path): void {
                 file_put_contents($path, 'pdf');

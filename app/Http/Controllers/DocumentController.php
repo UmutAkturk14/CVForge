@@ -130,14 +130,55 @@ class DocumentController extends Controller
         $fileName = $this->buildExportFileName($document, $content);
         $outputPath = $directory.'/'.$fileName;
 
-        Browsershot::html($html)
-            ->format('A4')
+        $browsershot = Browsershot::html($html)
             ->showBackground()
             ->margins(10, 12, 10, 12)
-            ->noSandbox()
-            ->save($outputPath);
+            ->noSandbox();
+
+        if ($document->type === Document::TYPE_COVER_LETTER) {
+            $dimensions = $this->measureCoverLetterPageSize($html);
+
+            if ($dimensions) {
+                $browsershot->paperSize($dimensions['width'], $dimensions['height'], 'px');
+            } else {
+                $browsershot->format('A4');
+            }
+        } else {
+            $browsershot->format('A4');
+        }
+
+        $browsershot->save($outputPath);
 
         return response()->download($outputPath, $fileName)->deleteFileAfterSend();
+    }
+
+    /**
+     * @return null|array{width: float, height: float}
+     */
+    protected function measureCoverLetterPageSize(string $html): ?array
+    {
+        $raw = Browsershot::html($html)
+            ->noSandbox()
+            ->evaluate(
+                '(() => {
+                    const doc = document.documentElement;
+                    const body = document.body;
+                    const width = Math.ceil(Math.max(doc.scrollWidth, body.scrollWidth, doc.offsetWidth, body.offsetWidth));
+                    const height = Math.ceil(Math.max(doc.scrollHeight, body.scrollHeight, doc.offsetHeight, body.offsetHeight));
+                    return String(width) + "x" + String(height);
+                })()',
+            );
+
+        $value = trim($raw);
+
+        if (! preg_match('/^(\\d+)x(\\d+)$/', $value, $matches)) {
+            return null;
+        }
+
+        return [
+            'width' => (float) $matches[1],
+            'height' => (float) $matches[2],
+        ];
     }
 
     protected function buildExportFileName(Document $document, array $content): string

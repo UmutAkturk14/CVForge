@@ -1,6 +1,5 @@
-import AppLogoIcon from '@/components/app-logo-icon';
-import { home } from '@/routes';
-import { Link } from '@inertiajs/react';
+import { type SharedData } from '@/types';
+import { usePage } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
 
 interface AuthLayoutProps {
@@ -14,29 +13,24 @@ export default function AuthSimpleLayout({
     title,
     description,
 }: PropsWithChildren<AuthLayoutProps>) {
-    return (
-        <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
-            <div className="w-full max-w-sm">
-                <div className="flex flex-col gap-8">
-                    <div className="flex flex-col items-center gap-4">
-                        <Link
-                            href={home()}
-                            className="flex flex-col items-center gap-2 font-medium"
-                        >
-                            <div className="mb-1 flex h-9 w-9 items-center justify-center rounded-md">
-                                <AppLogoIcon className="size-9 fill-current text-[var(--foreground)] dark:text-white" />
-                            </div>
-                            <span className="sr-only">{title}</span>
-                        </Link>
+    const { name } = usePage<SharedData>().props;
 
-                        <div className="space-y-2 text-center">
-                            <h1 className="text-xl font-medium">{title}</h1>
-                            <p className="text-center text-sm text-muted-foreground">
+    return (
+        <div className="flex min-h-svh flex-col items-center justify-center bg-[#f6f3ef] px-6 py-10 text-[#1e1d1a] dark:bg-[#0e0c0b] dark:text-[#f3f1ed]">
+            <div className="w-full max-w-md">
+                <div className="rounded-3xl border border-black/10 bg-white/80 p-8 shadow-[0_24px_60px_-40px_rgba(15,14,12,0.6)] backdrop-blur dark:border-white/10 dark:bg-[#151311]">
+                    <div className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-2 text-center">
+                            <span className="text-xs font-semibold uppercase tracking-[0.3em] text-[#8a837a] dark:text-[#a9a39b]">
+                                {name}
+                            </span>
+                            <h1 className="text-2xl font-semibold">{title}</h1>
+                            <p className="text-sm text-[#6a655f] dark:text-[#b1aba3]">
                                 {description}
                             </p>
                         </div>
+                        {children}
                     </div>
-                    {children}
                 </div>
             </div>
         </div>
