@@ -17,7 +17,7 @@ type ResumeSectionsProps = {
     updateResumeArrayItem: <
         Key extends keyof Pick<
             ResumeContent,
-            'links' | 'experience' | 'education' | 'skills' | 'languages'
+            'links' | 'experience' | 'education' | 'languages'
         >,
     >(
         key: Key,
@@ -27,7 +27,7 @@ type ResumeSectionsProps = {
     addResumeItem: <
         Key extends keyof Pick<
             ResumeContent,
-            'links' | 'experience' | 'education' | 'skills' | 'languages'
+            'links' | 'experience' | 'education' | 'languages'
         >,
     >(
         key: Key,
@@ -634,57 +634,149 @@ export const createResumeSections = ({
                         type="button"
                         size="sm"
                         variant="ghost"
-                        onClick={() => addResumeItem('skills', { name: '', level: 3 })}
+                        disabled={resume.skills.length >= 4}
+                        onClick={() =>
+                            updateContent((prev) => {
+                                const current = prev as ResumeContent;
+                                if (current.skills.length >= 4) {
+                                    return current;
+                                }
+
+                                return {
+                                    ...current,
+                                    skills: [
+                                        ...current.skills,
+                                        { title: '', items: [{ name: '' }] },
+                                    ],
+                                };
+                            })
+                        }
                     >
-                        Add skill
+                        Add group
                     </Button>
                 </div>
-                <div className="space-y-3">
-                    {resume.skills.map((skill, index) => (
-                        <div key={`skill-${index}`} className="flex gap-2">
-                            <Input
-                                placeholder="Skill"
-                                value={skill.name}
-                                onChange={(event) =>
-                                    updateResumeArrayItem('skills', index, {
-                                        ...skill,
-                                        name: event.target.value,
-                                    })
-                                }
-                            />
-                            <Input
-                                type="number"
-                                min={1}
-                                max={5}
-                                placeholder="Level (1-5)"
-                                value={skill.level}
-                                onChange={(event) =>
-                                    updateResumeArrayItem('skills', index, {
-                                        ...skill,
-                                        level: Number(event.target.value),
-                                    })
-                                }
-                            />
-                            {resume.skills.length > 1 && (
-                                <Button
-                                    type="button"
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() =>
+                {resume.skills.length >= 4 && (
+                    <p className="text-xs text-muted-foreground">
+                        You can add up to 4 skill groups.
+                    </p>
+                )}
+                <div className="space-y-4">
+                    {resume.skills.map((group, groupIndex) => (
+                        <div
+                            key={`skill-group-${groupIndex}`}
+                            className="space-y-3 rounded-md border border-sidebar-border/70 p-3 dark:border-sidebar-border"
+                        >
+                            <div className="flex flex-wrap items-center gap-2">
+                                <Input
+                                    placeholder="Group name (e.g. Frontend)"
+                                    value={group.title}
+                                    onChange={(event) =>
                                         updateContent((prev) => {
                                             const current = prev as ResumeContent;
-                                            return {
-                                                ...current,
-                                                skills: current.skills.filter(
-                                                    (_, idx) => idx !== index,
-                                                ),
+                                            const nextGroups = [...current.skills];
+                                            nextGroups[groupIndex] = {
+                                                ...group,
+                                                title: event.target.value,
                                             };
+                                            return { ...current, skills: nextGroups };
                                         })
                                     }
-                                >
-                                    Delete
-                                </Button>
-                            )}
+                                />
+                                {resume.skills.length > 1 && (
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() =>
+                                            updateContent((prev) => {
+                                                const current = prev as ResumeContent;
+                                                return {
+                                                    ...current,
+                                                    skills: current.skills.filter(
+                                                        (_, idx) => idx !== groupIndex,
+                                                    ),
+                                                };
+                                            })
+                                        }
+                                    >
+                                        Remove group
+                                    </Button>
+                                )}
+                            </div>
+                            <div className="space-y-2">
+                                {group.items.map((skill, skillIndex) => (
+                                    <div
+                                        key={`skill-${groupIndex}-${skillIndex}`}
+                                        className="grid gap-2 sm:grid-cols-[1fr_auto]"
+                                    >
+                                        <Input
+                                            placeholder="Skill"
+                                            value={skill.name}
+                                            onChange={(event) =>
+                                                updateContent((prev) => {
+                                                    const current = prev as ResumeContent;
+                                                    const nextGroups = [...current.skills];
+                                                    const nextItems = [...nextGroups[groupIndex].items];
+                                                    nextItems[skillIndex] = {
+                                                        ...skill,
+                                                        name: event.target.value,
+                                                    };
+                                                    nextGroups[groupIndex] = {
+                                                        ...nextGroups[groupIndex],
+                                                        items: nextItems,
+                                                    };
+                                                    return { ...current, skills: nextGroups };
+                                                })
+                                            }
+                                            className="w-full"
+                                        />
+                                        {group.items.length > 1 && (
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                variant="ghost"
+                                                className="justify-self-start sm:justify-self-end"
+                                                onClick={() =>
+                                                    updateContent((prev) => {
+                                                        const current = prev as ResumeContent;
+                                                        const nextGroups = [...current.skills];
+                                                        nextGroups[groupIndex] = {
+                                                            ...nextGroups[groupIndex],
+                                                            items: nextGroups[groupIndex].items.filter(
+                                                                (_, idx) => idx !== skillIndex,
+                                                            ),
+                                                        };
+                                                        return { ...current, skills: nextGroups };
+                                                    })
+                                                }
+                                            >
+                                                Delete
+                                            </Button>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                onClick={() =>
+                                    updateContent((prev) => {
+                                        const current = prev as ResumeContent;
+                                        const nextGroups = [...current.skills];
+                                        nextGroups[groupIndex] = {
+                                            ...nextGroups[groupIndex],
+                                            items: [
+                                                ...nextGroups[groupIndex].items,
+                                                { name: '' },
+                                            ],
+                                        };
+                                        return { ...current, skills: nextGroups };
+                                    })
+                                }
+                            >
+                                Add skill
+                            </Button>
                         </div>
                     ))}
                 </div>

@@ -32,9 +32,40 @@ import {
 } from './types';
 
 export default function EditDocument({ document }: EditProps) {
+    const normalizeResumeContent = (content: ResumeContent): ResumeContent => {
+        if (!Array.isArray(content.skills)) {
+            return content;
+        }
+
+        const [firstSkill] = content.skills as unknown as Array<
+            Record<string, unknown>
+        >;
+
+        if (firstSkill && 'items' in firstSkill) {
+            return content;
+        }
+
+        return {
+            ...content,
+            skills: [
+                {
+                    title: 'Skills',
+                    items: (content.skills as unknown as Array<{ name?: string }>).map(
+                        (skill) => ({ name: skill.name ?? '' }),
+                    ),
+                },
+            ],
+        };
+    };
+
     const initialContent = useMemo<ResumeContent | CoverLetterContent>(() => {
         if (document.type === 'resume') {
-            return { ...defaultResumeContent(), ...(document.content ?? {}) };
+            const merged = {
+                ...defaultResumeContent(),
+                ...(document.content ?? {}),
+            } as ResumeContent;
+
+            return normalizeResumeContent(merged);
         }
 
         return { ...defaultCoverLetterContent(), ...(document.content ?? {}) };
@@ -110,7 +141,7 @@ export default function EditDocument({ document }: EditProps) {
     const updateResumeArrayItem = <
         Key extends keyof Pick<
             ResumeContent,
-            'links' | 'experience' | 'education' | 'skills' | 'languages'
+            'links' | 'experience' | 'education' | 'languages'
         >,
     >(
         key: Key,
@@ -131,7 +162,7 @@ export default function EditDocument({ document }: EditProps) {
     const addResumeItem = <
         Key extends keyof Pick<
             ResumeContent,
-            'links' | 'experience' | 'education' | 'skills' | 'languages'
+            'links' | 'experience' | 'education' | 'languages'
         >,
     >(
         key: Key,

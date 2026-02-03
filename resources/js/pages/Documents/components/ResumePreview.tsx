@@ -183,12 +183,23 @@ export function ResumePreview({ resume, variant }: ResumePreviewProps) {
                         <div className="grid gap-4 sm:grid-cols-2">
                             <div>
                                 <h3 className={sectionTitleClass}>Skills</h3>
-                                <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                                    {resume.skills.map((skill, index) => (
-                                        <span key={`${skill.name}-${index}`} className={pillClass}>
-                                            {skill.name || 'Skill'}
-                                            {skill.level ? ` · ${skill.level}/5` : ''}
-                                        </span>
+                                <div className="mt-2 grid gap-4 text-xs sm:grid-cols-2 lg:grid-cols-4">
+                                    {resume.skills.map((group, index) => (
+                                        <div key={`${group.title}-${index}`} className="space-y-2">
+                                            <p className="text-xs font-bold uppercase tracking-[0.2em] text-neutral-700 underline underline-offset-4 dark:text-neutral-300">
+                                                {group.title || 'Skills'}
+                                            </p>
+                                            <ul className="grid gap-1">
+                                                {group.items.map((skill, skillIndex) => (
+                                                    <li
+                                                        key={`${skill.name}-${skillIndex}`}
+                                                        className="text-sm text-neutral-800 dark:text-neutral-200"
+                                                    >
+                                                        {skill.name || 'Skill'}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -367,16 +378,22 @@ export function ResumePreview({ resume, variant }: ResumePreviewProps) {
                         <span className={sectionTitleClass}>SKILLS</span>
                         <span className="h-px flex-1 bg-neutral-300 dark:bg-neutral-700" />
                     </div>
-                    <div className="grid gap-2 sm:grid-cols-2">
-                        {resume.skills.map((skill, index) => (
-                            <div key={`${skill.name}-${index}`} className="flex items-center text-sm text-neutral-800 dark:text-neutral-200">
-                                <span>{skill.name || 'Skill'}</span>
-                                <span className="flex-1 border-b border-dotted border-neutral-400 px-2 dark:border-neutral-600" />
-                                {skill.level ? (
-                                    <span className="text-xs uppercase tracking-wide">{skill.level}/5</span>
-                                ) : (
-                                    <span className="text-xs">&nbsp;</span>
-                                )}
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        {resume.skills.map((group, index) => (
+                            <div key={`${group.title}-${index}`} className="space-y-2">
+                                <p className="text-xs font-bold uppercase tracking-wide text-neutral-700 underline underline-offset-4 dark:text-neutral-300">
+                                    {group.title || 'Skills'}
+                                </p>
+                                <ul className="grid gap-1">
+                                    {group.items.map((skill, skillIndex) => (
+                                        <li
+                                            key={`${skill.name}-${skillIndex}`}
+                                            className="text-sm text-neutral-800 dark:text-neutral-200"
+                                        >
+                                            {skill.name || 'Skill'}
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         ))}
                     </div>

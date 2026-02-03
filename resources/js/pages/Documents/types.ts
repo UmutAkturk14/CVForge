@@ -44,7 +44,8 @@ export type ResumeEducation = {
     end_date: string;
     description_markdown: string;
 };
-export type ResumeSkill = { name: string; level: number };
+export type ResumeSkill = { name: string };
+export type ResumeSkillGroup = { title: string; items: ResumeSkill[] };
 export type ResumeLanguage = { name: string; level: string };
 export type ResumeCustomItem = {
     label: string;
@@ -61,7 +62,7 @@ export type ResumeContent = {
     links: ResumeLink[];
     experience: ResumeExperience[];
     education: ResumeEducation[];
-    skills: ResumeSkill[];
+    skills: ResumeSkillGroup[];
     languages: ResumeLanguage[];
     custom_sections: ResumeCustomSection[];
     layout: { section_order: string[] };
@@ -164,7 +165,12 @@ export const defaultResumeContent = (): ResumeContent => ({
             description_markdown: '',
         },
     ],
-    skills: [{ name: '', level: 3 }],
+    skills: [
+        {
+            title: 'Core skills',
+            items: [{ name: '' }],
+        },
+    ],
     languages: [{ name: '', level: '' }],
     custom_sections: [
         {

@@ -70,6 +70,80 @@ class DocumentControllerTest extends TestCase
         });
     }
 
+    public function test_resumes_index_filters_by_resume_type(): void
+    {
+        $user = User::factory()->create();
+        $resume = Document::query()->create([
+            'user_id' => $user->id,
+            'type' => Document::TYPE_RESUME,
+            'title' => 'Resume Draft',
+            'status' => Document::STATUS_DRAFT,
+            'content' => [],
+        ]);
+        Document::query()->create([
+            'user_id' => $user->id,
+            'type' => Document::TYPE_COVER_LETTER,
+            'title' => 'Cover Letter',
+            'status' => Document::STATUS_DRAFT,
+            'content' => [],
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('resumes.index'));
+
+        $response->assertOk();
+
+        $response->assertInertia(function (Assert $page) use ($resume): void {
+            $page
+                ->component('Resumes/Index')
+                ->where('filters.type', Document::TYPE_RESUME)
+                ->has('documents.data', 1, function (Assert $document) use ($resume): void {
+                    $document
+                        ->where('id', $resume->id)
+                        ->where('type', Document::TYPE_RESUME)
+                        ->etc();
+                });
+        });
+    }
+
+    public function test_cover_letters_index_filters_by_cover_letter_type(): void
+    {
+        $user = User::factory()->create();
+        Document::query()->create([
+            'user_id' => $user->id,
+            'type' => Document::TYPE_RESUME,
+            'title' => 'Resume Draft',
+            'status' => Document::STATUS_DRAFT,
+            'content' => [],
+        ]);
+        $coverLetter = Document::query()->create([
+            'user_id' => $user->id,
+            'type' => Document::TYPE_COVER_LETTER,
+            'title' => 'Cover Letter',
+            'status' => Document::STATUS_DRAFT,
+            'content' => [],
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('coverletters.index'));
+
+        $response->assertOk();
+
+        $response->assertInertia(function (Assert $page) use ($coverLetter): void {
+            $page
+                ->component('CoverLetters/Index')
+                ->where('filters.type', Document::TYPE_COVER_LETTER)
+                ->has('documents.data', 1, function (Assert $document) use ($coverLetter): void {
+                    $document
+                        ->where('id', $coverLetter->id)
+                        ->where('type', Document::TYPE_COVER_LETTER)
+                        ->etc();
+                });
+        });
+    }
+
     public function test_store_creates_document_and_redirects_to_show(): void
     {
         $user = User::factory()->create();
@@ -285,10 +359,13 @@ class DocumentControllerTest extends TestCase
                     && str_contains($html, '<strong>science</strong>');
             },
         ))->andReturnSelf();
+        $mock->shouldReceive('html')->once()->with(Mockery::type('string'))->andReturnSelf();
+        $mock->shouldReceive('evaluate')->once()->with(Mockery::type('string'))->andReturn('980');
         $mock->shouldReceive('format')->once()->with('A4')->andReturnSelf();
+        $mock->shouldReceive('setOption')->once()->with('scale', Mockery::type('float'))->andReturnSelf();
         $mock->shouldReceive('showBackground')->once()->andReturnSelf();
         $mock->shouldReceive('margins')->once()->with(10, 12, 10, 12)->andReturnSelf();
-        $mock->shouldReceive('noSandbox')->once()->andReturnSelf();
+        $mock->shouldReceive('noSandbox')->twice()->andReturnSelf();
         $mock->shouldReceive('save')->once()->with(Mockery::type('string'))->andReturnUsing(
             static function (string $path): void {
                 file_put_contents($path, 'pdf');

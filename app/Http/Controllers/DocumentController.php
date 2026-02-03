@@ -20,7 +20,39 @@ class DocumentController extends Controller
     {
         $this->authorize('viewAny', Document::class);
 
+        return Inertia::render('Documents/Index', $this->buildIndexData($request));
+    }
+
+    public function resumes(Request $request): Response
+    {
+        $this->authorize('viewAny', Document::class);
+
+        return Inertia::render(
+            'Resumes/Index',
+            $this->buildIndexData($request, Document::TYPE_RESUME),
+        );
+    }
+
+    public function coverLetters(Request $request): Response
+    {
+        $this->authorize('viewAny', Document::class);
+
+        return Inertia::render(
+            'CoverLetters/Index',
+            $this->buildIndexData($request, Document::TYPE_COVER_LETTER),
+        );
+    }
+
+    /**
+     * @return array{documents: \Illuminate\Contracts\Pagination\LengthAwarePaginator, filters: array<string, string>}
+     */
+    protected function buildIndexData(Request $request, ?string $forcedType = null): array
+    {
         $filters = $request->only(['type', 'status']);
+
+        if ($forcedType) {
+            $filters['type'] = $forcedType;
+        }
 
         $docs = Document::query()
             ->where('user_id', $request->user()->id)
@@ -30,10 +62,10 @@ class DocumentController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return Inertia::render('Documents/Index', [
+        return [
             'documents' => $docs,
             'filters' => array_filter($filters),
-        ]);
+        ];
     }
 
     public function store(StoreDocumentRequest $request): RedirectResponse
@@ -144,7 +176,8 @@ class DocumentController extends Controller
                 $browsershot->format('A4');
             }
         } else {
-            $browsershot->format('A4');
+            $scale = $this->measureResumeScale($html);
+            $browsershot->format('A4')->setOption('scale', $scale);
         }
 
         $browsershot->save($outputPath);
@@ -179,6 +212,36 @@ class DocumentController extends Controller
             'width' => (float) $matches[1],
             'height' => (float) $matches[2],
         ];
+    }
+
+    protected function measureResumeScale(string $html): float
+    {
+        $marginTopMm = 10.0;
+        $marginBottomMm = 12.0;
+        $pxPerMm = 96.0 / 25.4;
+        $pageHeightPx = 1122.0;
+        $availableHeight = $pageHeightPx - (($marginTopMm + $marginBottomMm) * $pxPerMm);
+
+        $raw = Browsershot::html($html)
+            ->noSandbox()
+            ->evaluate(
+                '(() => {
+                    const doc = document.documentElement;
+                    const body = document.body;
+                    const height = Math.ceil(Math.max(doc.scrollHeight, body.scrollHeight, doc.offsetHeight, body.offsetHeight));
+                    return String(height);
+                })()',
+            );
+
+        $height = is_numeric($raw) ? (float) $raw : 0.0;
+
+        if ($height <= 0) {
+            return 1.0;
+        }
+
+        $scale = min(1.0, $availableHeight / $height);
+
+        return max(0.1, $scale);
     }
 
     protected function buildExportFileName(Document $document, array $content): string

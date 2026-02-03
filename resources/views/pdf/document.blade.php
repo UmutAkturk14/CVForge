@@ -125,6 +125,7 @@
         .cover-contact {
             display: flex;
             flex-wrap: wrap;
+            justify-content: center;
             gap: 10px;
             font-size: 14px;
             color: #111111;
@@ -247,7 +248,7 @@
         @if (count(data_get($content, 'links', [])))
             <div class="section">
                 <div class="section-heading">LINKS</div>
-                <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; text-align: center;">
                     @foreach (data_get($content, 'links', []) as $link)
                         @php
                             $label = $link['label'] ?? 'Link';

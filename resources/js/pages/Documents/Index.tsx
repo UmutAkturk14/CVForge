@@ -42,17 +42,27 @@ type IndexProps = {
     filters?: Partial<Pick<Document, 'type' | 'status'>>;
 };
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Documents',
-        href: documentsIndex(),
-    },
-];
-
 export default function DocumentsIndex({
     documents,
     filters = {},
 }: IndexProps) {
+    const resolvedType = filters.type as DocumentType | undefined;
+    const pageTitle =
+        resolvedType === 'resume'
+            ? 'Resumes'
+            : resolvedType === 'cover_letter'
+              ? 'Cover letters'
+              : 'Documents';
+    const breadcrumbQuery = {
+        ...(filters.type ? { type: filters.type } : {}),
+        ...(filters.status ? { status: filters.status } : {}),
+    };
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: pageTitle,
+            href: documentsIndex({ query: breadcrumbQuery }),
+        },
+    ];
     const form = useForm({
         type: (filters.type as DocumentType) ?? 'resume',
         title: '',
@@ -86,9 +96,19 @@ export default function DocumentsIndex({
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Documents" />
+            <Head title={pageTitle} />
 
             <div className="flex flex-col gap-6 p-4">
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-2xl font-semibold">{pageTitle}</h1>
+                    <p className="text-sm text-muted-foreground">
+                        {resolvedType === 'resume'
+                            ? 'Create and refine resume versions tailored to each role.'
+                            : resolvedType === 'cover_letter'
+                              ? 'Track cover letters and keep them aligned with every application.'
+                              : 'Create and manage resumes and cover letters in one place.'}
+                    </p>
+                </div>
                 <div className="rounded-xl border border-sidebar-border/70 bg-card shadow-xs dark:border-sidebar-border">
                     <form
                         onSubmit={submit}

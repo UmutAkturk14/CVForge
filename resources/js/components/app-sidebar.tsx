@@ -6,21 +6,38 @@ import {
     SidebarContent,
     SidebarFooter,
     SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
-import AppLogo from './app-logo';
+import {
+    BookOpen,
+    FileSignature,
+    FileText,
+    Folder,
+    LayoutGrid,
+    Layers,
+} from 'lucide-react';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Resumes',
+        href: '/resumes',
+        icon: FileText,
+    },
+    {
+        title: 'Cover letters',
+        href: '/coverletters',
+        icon: FileSignature,
+    },
+    {
+        title: 'Documents',
+        href: '/documents',
+        icon: Layers,
     },
 ];
 
@@ -41,19 +58,10 @@ export function AppSidebar() {
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
-                                <AppLogo />
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
+                <NavMain items={mainNavItems} />
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
             </SidebarContent>
 
             <SidebarFooter>

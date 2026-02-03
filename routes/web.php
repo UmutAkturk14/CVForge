@@ -21,6 +21,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('resumes', [DocumentController::class, 'resumes'])->name('resumes.index');
+    Route::get('coverletters', [DocumentController::class, 'coverLetters'])->name('coverletters.index');
     Route::apiResource('documents', DocumentController::class);
     Route::get('documents/{document}/export', [DocumentController::class, 'export'])
         ->name('documents.export');
