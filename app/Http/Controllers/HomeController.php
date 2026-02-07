@@ -1,5 +1,7 @@
 <?php
+
 // app/Http/Controllers/HomeController.php
+
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
@@ -11,7 +13,7 @@ class HomeController
     {
         return Inertia::render('home', [
             'headline' => 'Build resumes fast',
-            'cta' => ['label' => 'Start now', 'url' => '/signup'],
+            'cta' => ['label' => 'Start now', 'url' => route('register')],
         ]);
     }
 }

@@ -19,7 +19,7 @@ class StoreDocumentRequest extends FormRequest
             'type' => ['required', 'string', Rule::in(Document::types())],
             'title' => ['required', 'string', 'max:255'],
             'status' => ['sometimes', 'string', Rule::in(Document::statuses())],
-            'template_key' => ['nullable', 'string', 'max:255'],
+            'template_key' => ['nullable', 'string', Rule::in(Document::templates())],
             'content' => ['sometimes', 'array'], // allow empty on create if you want
             'import_from' => ['nullable', 'integer', 'exists:documents,id'],
         ];

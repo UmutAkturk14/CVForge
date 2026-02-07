@@ -194,6 +194,21 @@ class DocumentControllerTest extends TestCase
         $response->assertRedirect(route('documents.show', $created));
     }
 
+    public function test_store_rejects_invalid_template_key(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('documents.store'), [
+                'type' => Document::TYPE_RESUME,
+                'title' => 'New Resume',
+                'template_key' => 'unsupported-template',
+            ]);
+
+        $response->assertSessionHasErrors('template_key');
+    }
+
     public function test_update_applies_changes_and_redirects_back(): void
     {
         $user = User::factory()->create();
@@ -211,7 +226,7 @@ class DocumentControllerTest extends TestCase
             ->patch(route('documents.update', $document), [
                 'title' => 'Updated Title',
                 'status' => Document::STATUS_FINAL,
-                'template_key' => 'template-123',
+                'template_key' => Document::TEMPLATE_CLASSIC,
                 'content' => ['body' => 'Updated'],
             ]);
 
@@ -221,8 +236,29 @@ class DocumentControllerTest extends TestCase
 
         $this->assertSame('Updated Title', $document->title);
         $this->assertSame(Document::STATUS_FINAL, $document->status);
-        $this->assertSame('template-123', $document->template_key);
+        $this->assertSame(Document::TEMPLATE_CLASSIC, $document->template_key);
         $this->assertSame(['body' => 'Updated'], $document->content);
+    }
+
+    public function test_update_rejects_invalid_template_key(): void
+    {
+        $user = User::factory()->create();
+        $document = Document::query()->create([
+            'user_id' => $user->id,
+            'type' => Document::TYPE_RESUME,
+            'title' => 'Original',
+            'status' => Document::STATUS_DRAFT,
+            'content' => [],
+        ]);
+
+        $response = $this
+            ->from(route('documents.show', $document))
+            ->actingAs($user)
+            ->patch(route('documents.update', $document), [
+                'template_key' => 'unsupported-template',
+            ]);
+
+        $response->assertSessionHasErrors('template_key');
     }
 
     public function test_destroy_soft_deletes_document_and_redirects(): void

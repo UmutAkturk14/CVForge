@@ -18,7 +18,7 @@ class UpdateDocumentRequest extends FormRequest
         return [
             'title' => ['sometimes', 'string', 'max:255'],
             'status' => ['sometimes', 'string', Rule::in(Document::statuses())],
-            'template_key' => ['nullable', 'string', 'max:255'],
+            'template_key' => ['nullable', 'string', Rule::in(Document::templates())],
             'content' => ['sometimes', 'array'],
         ];
     }
