@@ -1,12 +1,10 @@
 # CVForge
 Eine Laravel‑12‑ und Inertia‑React‑Anwendung zum Erstellen von Lebensläufen und Anschreiben mit wiederverwendbaren Abschnitten, klassischen/modernen Vorlagen und schnellen Exporten.
 
-## Vision
-- Erstellung von Lebensläufen mit geführten Abschnitten (Berufserfahrung, Ausbildung, Fähigkeiten, Projekte, Links).
-- Mehrere Tailwind‑Themes mit Radix‑UI‑Bausteinen und wiederverwendbaren Layout‑Primitiven.
-- Duplizieren/Versionieren für rollenbezogene Varianten.
-- Exporte (druckfreundlich, PDF‑bereit), teilbare Links und Lokalisierung.
-- Responsiver, zugänglicher und performanter Editor für Desktop und Mobile.
+## Überblick
+- Geführter Editor für Lebensläufe und Anschreiben mit wiederverwendbaren Abschnitten.
+- Classic‑ und Modern‑Vorlagen für beide Dokumenttypen (Preview + PDF‑Export).
+- Inertia‑UI mit typisierten Routes (Wayfinder) und Tailwind v4.
 
 ## Tech Stack
 - Backend: PHP 8.4, Laravel 12, Inertia Laravel v2, Fortify für Auth, Wayfinder für typisierte Routes.
@@ -16,10 +14,10 @@ Eine Laravel‑12‑ und Inertia‑React‑Anwendung zum Erstellen von Lebenslä
 - Dev/Runtime: Laravel Sail (Docker), Vite‑Devserver.
 
 ## Kernmodule
-- Datenmodell für Resume‑ und Anschreiben‑Inhalte (JSON) mit typisierten Abschnitten.
-- Classic‑ und Modern‑Vorlagen für Resume und Anschreiben (Preview + PDF‑Export).
-- Geführter Editor mit Validierung und Duplizieren per Inertia.
-- Export‑Layer via Browsershot (HTML → PDF) mit Print‑Styling.
+- JSON‑Datenmodell für Resume‑ und Anschreiben‑Abschnitte.
+- Classic‑ und Modern‑Vorlagen für Preview und PDF‑Export.
+- Geführter Editor mit Validierung via Inertia.
+- Export‑Layer via Browsershot (HTML → PDF).
 - Zugriffskontrolle über Laravel‑Auth und Policies.
 
 ## Entwicklung (Sail + MySQL)
@@ -37,6 +35,6 @@ PDF‑Export verwendet Browsershot + Puppeteer. Die Sail‑Runtime installiert G
 - `PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable`
 - `PUPPETEER_SKIP_DOWNLOAD=1`
 
-## Roadmap (initial)
-- Sharing‑Controls (private, view‑only Link) und Versionshistorie.
-- Lokalisierung und zeitzonenbewusste Datumsdarstellung.
+## Status
+- Keine öffentlichen Sharing‑Links oder Versionshistorie.
+- Lokalisierung ist auf wenige Anschreiben‑Labels begrenzt; Resumes sind nicht lokalisiert.

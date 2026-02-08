@@ -3,12 +3,10 @@ A Laravel 12 + Inertia React application for crafting polished resumes and cover
 
 Readme in German: [README.de.md](README.de.md)
 
-## Vision
-- Streamline CV and resume creation with guided sections (experience, education, skills, projects, links).
-- Offer multiple Tailwind-powered themes with Radix UI building blocks and reusable layout primitives.
-- Support duplication/versioning so users can keep tailored resumes per role.
-- Deliver exports (print-friendly web, PDF-ready), shareable links, and localized content where needed.
-- Keep the editor responsive, accessible, and performant on both desktop and mobile.
+## Overview
+- Guided editor for resumes and cover letters with reusable sections.
+- Classic + modern templates for both document types (preview + PDF export).
+- Inertia-driven UI with typed routes (Wayfinder) and Tailwind v4 styling.
 
 ## Tech Stack
 - Backend: PHP 8.4, Laravel 12, Inertia Laravel v2, Fortify for auth, Wayfinder for typed routes.
@@ -18,10 +16,10 @@ Readme in German: [README.de.md](README.de.md)
 - Dev/runtime: Laravel Sail (Docker), Vite dev server.
 
 ## Core Modules
-- Profile data model for resume and cover-letter content (JSON) with typed sections.
-- Classic + modern templates for both resume and cover letter (preview + PDF export).
-- Guided section editor with validation and duplication via Inertia.
-- Export layer using Browsershot (HTML → PDF) with print styling.
+- JSON content model for resume and cover-letter sections.
+- Classic + modern templates for preview and PDF export.
+- Guided section editor with validation via Inertia.
+- Export layer using Browsershot (HTML → PDF).
 - Account and access controls built on Laravel authentication and policies.
 
 ## Development Notes
@@ -45,6 +43,6 @@ PDF export uses Browsershot + Puppeteer. The Sail runtime installs Google Chrome
 - `PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable`
 - `PUPPETEER_SKIP_DOWNLOAD=1`
 
-## Roadmap (initial)
-- Sharing controls (private, view-only link) and audit history/versioning.
-- Localization and timezone-aware date rendering.
+## Status
+- No public sharing links or version history yet.
+- Localization is limited to a few cover-letter labels; resumes are not localized.

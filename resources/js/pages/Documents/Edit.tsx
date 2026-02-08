@@ -22,7 +22,6 @@ import {
     type CoverLetterContent,
     type CoverLetterCustomSection,
     type CoverLetterSender,
-    type Document,
     type DocumentStatus,
     type EditProps,
     type ResumeContent,
@@ -31,33 +30,31 @@ import {
     type TemplateKey,
 } from './types';
 
-export default function EditDocument({ document }: EditProps) {
-    const normalizeResumeContent = (content: ResumeContent): ResumeContent => {
-        if (!Array.isArray(content.skills)) {
-            return content;
-        }
+const normalizeResumeContent = (content: ResumeContent): ResumeContent => {
+    if (!Array.isArray(content.skills)) {
+        return content;
+    }
 
-        const [firstSkill] = content.skills as unknown as Array<
-            Record<string, unknown>
-        >;
+    const [firstSkill] = content.skills as unknown as Array<Record<string, unknown>>;
 
-        if (firstSkill && 'items' in firstSkill) {
-            return content;
-        }
+    if (firstSkill && 'items' in firstSkill) {
+        return content;
+    }
 
-        return {
-            ...content,
-            skills: [
-                {
-                    title: 'Skills',
-                    items: (content.skills as unknown as Array<{ name?: string }>).map(
-                        (skill) => ({ name: skill.name ?? '' }),
-                    ),
-                },
-            ],
-        };
+    return {
+        ...content,
+        skills: [
+            {
+                title: 'Skills',
+                items: (content.skills as unknown as Array<{ name?: string }>).map(
+                    (skill) => ({ name: skill.name ?? '' }),
+                ),
+            },
+        ],
     };
+};
 
+export default function EditDocument({ document }: EditProps) {
     const initialContent = useMemo<ResumeContent | CoverLetterContent>(() => {
         if (document.type === 'resume') {
             const merged = {
@@ -86,11 +83,7 @@ export default function EditDocument({ document }: EditProps) {
 
     useEffect(() => {
         form.setData('content', content);
-    }, [content]);
-
-    useEffect(() => {
-        setActiveSectionIndex(0);
-    }, [document.type]);
+    }, [content, form]);
 
     const breadcrumbs: BreadcrumbItem[] = useMemo(
         () => [
@@ -297,31 +290,28 @@ export default function EditDocument({ document }: EditProps) {
         saveDocument();
     };
 
-    const sections: Section[] = useMemo(() => {
-        if (document.type === 'resume') {
-            return createResumeSections({
-                resume: content as ResumeContent,
-                updateResumeField,
-                updateResumeArrayItem,
-                addResumeItem,
-                updateCustomSection,
-                updateContent,
-            });
-        }
-
-        return createCoverLetterSections({
-            cover: content as CoverLetterContent,
-            updateCoverLetterField,
-            updateCoverLetterSenderList,
-            addCoverLetterSenderItem,
-            updateCoverLetterBlock,
-            updateCoverLetterCustomSection,
-            updateContent: (updater) =>
-                updateContent((prev) =>
-                    updater(prev as CoverLetterContent),
-                ),
-        });
-    }, [content, document.type]);
+    const sections: Section[] =
+        document.type === 'resume'
+            ? createResumeSections({
+                  resume: content as ResumeContent,
+                  updateResumeField,
+                  updateResumeArrayItem,
+                  addResumeItem,
+                  updateCustomSection,
+                  updateContent,
+              })
+            : createCoverLetterSections({
+                  cover: content as CoverLetterContent,
+                  updateCoverLetterField,
+                  updateCoverLetterSenderList,
+                  addCoverLetterSenderItem,
+                  updateCoverLetterBlock,
+                  updateCoverLetterCustomSection,
+                  updateContent: (updater) =>
+                      updateContent((prev) =>
+                          updater(prev as CoverLetterContent),
+                      ),
+              });
 
     const currentSection = sections[activeSectionIndex] ?? sections[0];
     const templateKey = (form.data.template_key as TemplateKey) ?? 'classic';

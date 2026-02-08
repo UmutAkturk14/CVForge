@@ -104,6 +104,15 @@ type CoverLetterPreviewProps = {
     variant?: TemplateKey;
 };
 
+type CoverLetterCopy = {
+    to: string;
+    subject: string;
+};
+
+type LanguageSchema = {
+    cover_letter?: Record<string, CoverLetterCopy>;
+};
+
 export function CoverLetterPreview({ cover }: CoverLetterPreviewProps) {
     useEffect(() => {
         const id = 'cover-letter-signature-fonts';
@@ -145,9 +154,10 @@ export function CoverLetterPreview({ cover }: CoverLetterPreviewProps) {
         .filter(Boolean)
         .join(' • ');
     const language = cover.language ?? 'en';
+    const coverLetterCopy = (languages as LanguageSchema).cover_letter;
     const copy =
-        (languages as Record<string, any>)?.cover_letter?.[language] ??
-        (languages as Record<string, any>)?.cover_letter?.en ?? {
+        coverLetterCopy?.[language] ??
+        coverLetterCopy?.en ?? {
             to: 'To',
             subject: 'Subject',
         };
