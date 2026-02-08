@@ -90,12 +90,6 @@ const isLegacyDefault = (value?: string): boolean => {
 
     const normalized = value.trim().toLowerCase();
     const patterns = [
-        /^dear\s/i,
-        /i\s*am\s*writing\s*to\s*apply\s*for\s*the.*role\s+at/i,
-        /i['’]m\s*writing\s*to\s*apply\s*for\s*the.*role\s+at/i,
-        /apply\s*for\s*the.*role\s+at/i,
-        /thank\s*you\s*for\s*your\s*time\s*and\s*consideration/i,
-        /^sincerely[,\s]*/i,
         /^\*{0,2}\s*\{\{\s*full_name\s*\}\}\s*\*{0,2}\s*$/i,
         /^\*{0,2}\s*your name\s*\*{0,2}\s*$/i,
         /#position/i,

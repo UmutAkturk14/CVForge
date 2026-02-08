@@ -310,6 +310,37 @@ export const createCoverLetterSections = ({
                         className="border-input focus-visible:border-ring focus-visible:ring-ring/50 w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-[3px]"
                         rows={8}
                         value={bodyBlock.markdown ?? ''}
+                        onPaste={(event) => {
+                            const pastedText =
+                                event.clipboardData.getData('text/plain') ??
+                                event.clipboardData.getData('text');
+
+                            if (!pastedText) {
+                                return;
+                            }
+
+                            const textarea = event.currentTarget;
+                            const current = bodyBlock.markdown ?? '';
+                            const selectionStart = textarea.selectionStart ?? current.length;
+                            const selectionEnd = textarea.selectionEnd ?? current.length;
+
+                            const next =
+                                current.slice(0, selectionStart) +
+                                pastedText +
+                                current.slice(selectionEnd);
+
+                            event.preventDefault();
+                            updateBlockByType('body', { markdown: next });
+
+                            requestAnimationFrame(() => {
+                                const caretPosition = selectionStart + pastedText.length;
+                                textarea.selectionStart = caretPosition;
+                                textarea.selectionEnd = caretPosition;
+                            });
+                        }}
+                        onInput={(event) => {
+                            updateBlockByType('body', { markdown: event.currentTarget.value });
+                        }}
                         onChange={(event) =>
                             updateBlockByType('body', { markdown: event.target.value })
                         }

@@ -5,7 +5,7 @@ type HomeProps = {
     cta: { label: string; url: string };
 };
 
-export default function Home({ headline, cta }: HomeProps) {
+export default function Home({ headline, cta }: Readonly<HomeProps>) {
     return (
         <div>
             <h1>{headline}</h1>
